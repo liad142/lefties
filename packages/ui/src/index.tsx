@@ -11,6 +11,8 @@ export { Input } from "./components/ui/input";
 
 // Composite Components
 export { ItemCard } from "./components/item-card";
+export { StoreCard } from "./components/store-card";
+export type { StoreCardProps } from "./components/store-card";
 
 // Re-export types
 export type { ButtonProps } from "./components/ui/button";
