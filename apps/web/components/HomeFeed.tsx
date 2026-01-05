@@ -1,44 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { StoreCard } from "@food-rescue/ui";
-import { Sparkles, Timer, Star, Rocket, Search, Filter, Map as MapIcon } from "lucide-react";
+import { Timer, Star, Rocket, Search, Filter, Map as MapIcon, Loader2 } from "lucide-react";
 import { cn } from "@food-rescue/ui";
+import { createBrowserClient } from "@food-rescue/database";
+import Link from "next/link";
 
 const CATEGORIES = ["הכל", "טבעוני", "מאפיה", "סושי", "מתחת ל-20₪", "המבורגר", "פיצה"];
-
-const URGENT_DEALS = [
-  {
-    id: "hero-1",
-    storeName: "בייקרי דיזנגוף",
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=80",
-    distance: "400m",
-    rating: 4.9,
-    itemsLeft: 3,
-    totalItems: 15,
-    pickupTime: "נסגר ב-16:00",
-    discountTag: "-70%",
-  },
-  {
-    id: "hero-2",
-    storeName: "סושי בר בזל",
-    image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&q=80",
-    distance: "1.2km",
-    rating: 4.7,
-    itemsLeft: 5,
-    totalItems: 20,
-    pickupTime: "נסגר ב-15:30",
-    discountTag: "-50%",
-  },
-];
-
-const COMPACT_STORES = [
-  { id: "c1", storeName: "לחמנינה", image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400", itemsLeft: 2, totalItems: 10, rating: 4.5, discountTag: "-30%", distance: "200m", pickupTime: "14:00" },
-  { id: "c2", storeName: "ארקפה", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400", itemsLeft: 1, totalItems: 8, rating: 4.2, discountTag: "-40%", distance: "800m", pickupTime: "15:00" },
-  { id: "c3", storeName: "בוטיק סנטרל", image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?w=400", itemsLeft: 4, totalItems: 12, rating: 4.8, discountTag: "-50%", distance: "1.1km", pickupTime: "16:00" },
-  { id: "c4", storeName: "לה מולן", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", itemsLeft: 3, totalItems: 15, rating: 4.6, discountTag: "-60%", distance: "1.5km", pickupTime: "15:30" },
-];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -59,12 +29,92 @@ const itemVariants = {
 };
 
 export const HomeFeed = () => {
+  const [stores, setStores] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [supabase] = useState(() => createBrowserClient());
+
+  useEffect(() => {
+    let mounted = true;
+    
+    async function fetchStores() {
+      console.log("Fetching stores start...");
+      try {
+        setLoading(true);
+        
+        // Safety timeout of 5 seconds
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Fetch timeout")), 5000)
+        );
+
+        const fetchPromise = supabase
+          .from("stores")
+          .select(`
+            *,
+            items (
+              quantity
+            )
+          `)
+          .eq("status", "active");
+
+        const { data, error }: any = await Promise.race([fetchPromise, timeoutPromise]);
+
+        if (!mounted) return;
+        if (error) throw error;
+
+        console.log("Stores fetched successfully:", data?.length);
+
+        // Process stores to add some visual defaults since DB is empty for images
+        const processedStores = (data || []).map(store => {
+          const itemsLeft = store.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
+          return {
+            id: store.id,
+            storeName: store.name,
+            image: store.image_url || (store.name.includes("Vegan") 
+              ? "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80"
+              : "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&q=80"),
+            distance: "מדיזנגוף 1.2 ק\"מ",
+            rating: 4.8,
+            itemsLeft: itemsLeft,
+            totalItems: Math.max(itemsLeft + 5, 10), // Mock total
+            pickupTime: "19:00 - 21:00",
+            discountTag: "-50%",
+          };
+        });
+
+        setStores(processedStores);
+      } catch (err) {
+        console.error("Error fetching stores:", err);
+      } finally {
+        if (mounted) {
+          console.log("Setting loading to false");
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchStores();
+    return () => { mounted = false; };
+  }, [supabase]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
+      </div>
+    );
+  }
+
+  // Distribution for different sections
+  const urgentDeals = stores.slice(0, 2);
+  const compactStores = stores; // Use all for now as we only have 2 in DB
+  const prominentStore = stores[0];
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white pb-24 overflow-x-hidden">
-      {/* 1. Hero Discovery Section - Tightened Height */}
+      {/* 1. Hero Discovery Section */}
       <section className="relative h-[50vh] md:h-[60vh] max-h-[600px] min-h-[400px] w-full overflow-hidden">
         <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-          {URGENT_DEALS.map((deal) => (
+          {urgentDeals.length > 0 ? urgentDeals.map((deal) => (
             <div key={deal.id} className="relative h-full w-full flex-shrink-0 snap-center">
               <img
                 src={deal.image}
@@ -87,28 +137,34 @@ export const HomeFeed = () => {
                       {deal.storeName}
                     </h2>
                     <div className="flex items-center justify-end gap-6 text-lg md:text-xl font-bold text-zinc-300">
-                      <span>{deal.pickupTime}</span>
+                      <span>נסגר ב-{deal.pickupTime.split(' - ')[1]}</span>
                       <span>{deal.discountTag} הנחה</span>
                     </div>
-                    <button className="bg-white text-black px-8 py-4 rounded-2xl font-black text-lg shadow-[0_20px_50px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all">
-                      הצילו עכשיו
-                    </button>
+                    <Link href={`/store/${deal.id}`}>
+                      <button className="bg-white text-black px-8 py-4 rounded-2xl font-black text-lg shadow-[0_20px_50px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all">
+                        הצילו עכשיו
+                      </button>
+                    </Link>
                   </motion.div>
                 </div>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="w-full flex items-center justify-center bg-zinc-900 h-full">
+               <p className="text-zinc-500 font-bold">אין מבצעים פעילים כרגע</p>
+            </div>
+          )}
         </div>
         
         {/* Carousel Indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-          {URGENT_DEALS.map((_, i) => (
+          {urgentDeals.map((_, i) => (
             <div key={i} className={cn("h-1 rounded-full transition-all duration-300", i === 0 ? "w-8 bg-white" : "w-2 bg-white/30")} />
           ))}
         </div>
       </section>
 
-      {/* Main Content Area - Max Width Constrained */}
+      {/* Main Content Area */}
       <div className="max-w-screen-2xl mx-auto">
         {/* 2. Sticky Filter Bar */}
         <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-zinc-950/80 border-b border-white/5 px-6 py-4 mb-8">
@@ -133,7 +189,7 @@ export const HomeFeed = () => {
         </nav>
 
         <div className="space-y-16">
-          {/* Section A: Ending Soon - Forced Compact Sizing */}
+          {/* Section A: Ending Soon */}
           <motion.section
             initial="hidden"
             whileInView="visible"
@@ -152,15 +208,17 @@ export const HomeFeed = () => {
             </div>
             
             <div className="flex gap-4 overflow-x-auto snap-x scrollbar-hide px-6 py-2 pb-4">
-              {COMPACT_STORES.map((store) => (
+              {compactStores.map((store) => (
                 <motion.div key={store.id} variants={itemVariants} className="snap-start shrink-0">
-                  <StoreCard {...store} variant="compact" />
+                  <Link href={`/store/${store.id}`}>
+                    <StoreCard {...store} variant="compact" />
+                  </Link>
                 </motion.div>
               ))}
             </div>
           </motion.section>
 
-          {/* Section B: Best Rated - Standard Sizing (~1.5 visible) */}
+          {/* Section B: Best Rated */}
           <motion.section
             initial="hidden"
             whileInView="visible"
@@ -179,55 +237,43 @@ export const HomeFeed = () => {
             </div>
             
             <div className="flex gap-6 overflow-x-auto snap-x scrollbar-hide px-6 py-4">
-              {URGENT_DEALS.map((store) => (
+              {stores.map((store) => (
                 <motion.div key={store.id} variants={itemVariants} className="snap-start w-[75%] md:w-[40%] lg:w-[25%] shrink-0">
-                  <StoreCard {...store} variant="standard" className="h-full" />
+                  <Link href={`/store/${store.id}`}>
+                    <StoreCard {...store} variant="standard" className="h-full" />
+                  </Link>
                 </motion.div>
               ))}
             </div>
           </motion.section>
 
-          {/* Section C: Prominent Highlight - Constrained width */}
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={containerVariants}
-            className="space-y-6 px-6 pb-12"
-          >
-            <div className="flex items-center gap-3 rtl">
-              <div className="p-2 bg-emerald-500/20 rounded-xl">
-                <Rocket className="w-6 h-6 text-emerald-500" />
+          {/* Section C: Prominent Highlight */}
+          {prominentStore && (
+            <motion.section
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={containerVariants}
+              className="space-y-6 px-6 pb-12"
+            >
+              <div className="flex items-center gap-3 rtl">
+                <div className="p-2 bg-emerald-500/20 rounded-xl">
+                  <Rocket className="w-6 h-6 text-emerald-500" />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight">חדש באפליקציה 🚀</h3>
               </div>
-              <h3 className="text-2xl font-black tracking-tight">חדש באפליקציה 🚀</h3>
-            </div>
-            
-            <div className="max-w-4xl rtl">
-              <StoreCard 
-                id="prominent-1"
-                storeName="פיצה פרסקה - בעבודת יד"
-                image="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200"
-                distance="2.5km"
-                rating={5.0}
-                itemsLeft={12}
-                totalItems={20}
-                pickupTime="18:00 - 21:00"
-                discountTag="-20%"
-                variant="prominent"
-              />
-            </div>
-          </motion.section>
+              
+              <div className="max-w-4xl rtl">
+                <Link href={`/store/${prominentStore.id}`}>
+                  <StoreCard 
+                    {...prominentStore}
+                    variant="prominent"
+                  />
+                </Link>
+              </div>
+            </motion.section>
+          )}
         </div>
-      </div>
-
-      {/* Floating App Bar (Placeholder for Navigation) */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-20 backdrop-blur-3xl bg-zinc-900/90 rounded-[2.5rem] border border-white/10 flex items-center justify-around px-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[60]">
-        <div className="p-3 bg-emerald-500 rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-           <Search className="w-7 h-7 text-white" />
-        </div>
-        <MapIcon className="w-7 h-7 text-zinc-500" />
-        <Timer className="w-7 h-7 text-zinc-500" />
-        <div className="w-7 h-7 rounded-full bg-zinc-700" />
       </div>
     </div>
   );

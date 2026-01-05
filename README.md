@@ -146,3 +146,11 @@ See `CLAUDE.md` for detailed project guidelines and architectural decisions.
 - **UI Refinement (Screenshot Match)**: Refined `StoreRescueCard` to feature centered logos and titles, a green-star rating badge, and a centered discount pill. Added top icon-based navigation (Filter/Search/Map) and a bottom app-style navigation bar (Menu/Orders/Save food/Profile) to match the mobile app visual reference exactly.
 - **Ecological Hedonism Re-design**: Implemented the "Ultimate Store Card" (`StoreCard`) in `@food-rescue/ui` using Framer Motion, Glassmorphism, and immersive imagery. Updated the `web` app main feed to showcase this new high-fidelity, mobile-first design with RTL support and visual stock indicators.
 - **"Netflix for Food" Discovery Feed**: Overhauled the `web` app homepage with a magazine-style discovery layout. Introduced horizontal scroll-snap sections (Hero carousel, compact Ending Soon cards, prominent highlights) and a sticky glassmorphism filter bar. Integrated Framer Motion staggered animations for a native-app discovery experience.
+- **The "Ultimate Store Page" Overhaul**:
+    - **Database**: Added `item_type` enum (`surprise_bag`, `specific_item`) to the `items` table via migration `03_add_item_type.sql`.
+    - **UI Components**: Created a suite of premium components in `@food-rescue/ui`: `StoreHero` (immersive header), `TabsNav` (glowing sticky navigation), `SurpriseBagCard` (SpareEat-style bags), and `MenuItemCard` (Karma/Wolt-style items).
+    - **Page Implementation**: Assembled the new Store Page in `apps/web` with real-time data fetching, item filtering logic, and a high-end "Premium Dark" aesthetic using `slate-950` and Framer Motion transitions.
+- **Global Multi-Store Cart Implementation**:
+    - **Cart Engine**: Created a global `CartProvider` with `localStorage` persistence and multi-store grouping logic.
+    - **Cart Drawer**: Built a premium, Karma-inspired `CartDrawer` in the shared UI package for reviewing orders across multiple stores.
+    - **Live Data Sync**: Connected all "Add to Cart" actions to live Supabase data and fixed critical infinite-loading/reference bugs in the frontend.
