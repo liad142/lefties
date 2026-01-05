@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ITEM_STATUS, FOOD_TAGS, MIN_DISCOUNT_PERCENTAGE, MAX_DISCOUNT_PERCENTAGE, MAX_ITEM_QUANTITY } from "@food-rescue/config";
 
-export const itemSchema = z.object({
+export const baseItemSchema = z.object({
   id: z.string().uuid(),
   store_id: z.string().uuid(),
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -22,7 +22,9 @@ export const itemSchema = z.object({
   image_url: z.string().url().nullable().optional(),
   created_at: z.string().datetime().optional(),
   updated_at: z.string().datetime().optional(),
-}).refine(
+});
+
+export const itemSchema = baseItemSchema.refine(
   (data) => data.discount_price < data.original_price,
   {
     message: "Discount price must be less than original price",
@@ -39,13 +41,13 @@ export const itemSchema = z.object({
   }
 );
 
-export const createItemSchema = itemSchema.omit({
+export const createItemSchema = baseItemSchema.omit({
   id: true,
   created_at: true,
   updated_at: true,
 });
 
-export const updateItemSchema = itemSchema
+export const updateItemSchema = baseItemSchema
   .omit({
     id: true,
     store_id: true,
