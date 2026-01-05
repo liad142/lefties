@@ -1,0 +1,9 @@
+{
+  "extends": "@food-rescue/config/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": ["ES2022"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

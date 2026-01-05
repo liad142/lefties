@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+
+@theme {
+  --font-heebo: "Heebo", sans-serif;
+  
+  --color-primary: #009DE0;
+  --color-primary-dark: #0088c7;
+  --color-primary-light: #e6f7ff;
+  
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+
+:root {
+  --radius: 0.75rem;
+  --wolt-blue: #009DE0;
+  --wolt-blue-dark: #0088c7;
+  --wolt-blue-light: #e6f7ff;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: white;
+  color: rgb(17 24 39);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-heebo), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overscroll-behavior-y: contain;
+  line-height: 1.5;
+}
+
+/* Safe area for iOS */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--wolt-blue);
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glass Effect */
+.glass {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Shadows */
+.shadow-wolt {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-wolt-hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.shadow-wolt-menu {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
