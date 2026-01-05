@@ -3,3 +3,4 @@ export * from "./qr.service";
 export * from "./items.service";
 export * from "./orders.service";
 export * from "./stores.service";
+export * from "./reviews.service";
