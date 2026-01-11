@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Menu,
@@ -18,8 +18,14 @@ import { CartDrawer } from "@food-rescue/ui";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { totalItems, storeGroups, totalAmount, updateQuantity, removeItem } = useCart();
+
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    router.push("/checkout");
+  };
 
   return (
     <div className="min-h-screen bg-zinc-950 pb-20">
@@ -72,13 +78,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
         storeGroups={storeGroups}
         totalAmount={totalAmount}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
+        onCheckout={handleCheckout}
       />
     </div>
   );

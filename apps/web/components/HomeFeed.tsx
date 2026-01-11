@@ -64,7 +64,7 @@ export const HomeFeed = () => {
         console.log("Stores fetched successfully:", data?.length);
 
         // Process stores to add some visual defaults since DB is empty for images
-        const processedStores = (data || []).map(store => {
+        const processedStores = (data || []).map((store: any) => {
           const itemsLeft = store.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
           return {
             id: store.id,

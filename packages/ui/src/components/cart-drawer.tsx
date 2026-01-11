@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, X, Plus, Minus, Trash2, Apple, CreditCard, ChevronRight } from "lucide-react";
+import { ShoppingCart, X, Plus, Minus, Trash2, ArrowRight, ChevronRight, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "../lib/utils";
 
@@ -29,15 +29,17 @@ interface CartDrawerProps {
   totalAmount: number;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemoveItem: (itemId: string) => void;
+  onCheckout?: () => void;
 }
 
-export const CartDrawer = ({ 
-  isOpen, 
+export const CartDrawer = ({
+  isOpen,
   onClose,
   storeGroups,
   totalAmount,
   onUpdateQuantity,
-  onRemoveItem
+  onRemoveItem,
+  onCheckout
 }: CartDrawerProps) => {
 
   return (
@@ -140,30 +142,27 @@ export const CartDrawer = ({
               <div className="p-6 bg-zinc-950 border-t border-zinc-900 space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-zinc-400 text-sm">
-                    <span>Summary</span>
+                    <span>סיכום ביניים</span>
                     <span>₪{totalAmount.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-white font-black text-xl">
-                    <span>Total</span>
+                    <span>סה״כ</span>
                     <span>₪{totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <Button className="w-full h-14 bg-black hover:bg-zinc-900 text-white rounded-2xl font-black text-lg flex items-center justify-center gap-2 border border-zinc-800">
-                    <Apple className="w-6 h-6 fill-current" />
-                    Buy with Pay
-                  </Button>
-                  
-                  <Button className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-black rounded-2xl font-black text-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                    <CreditCard className="w-6 h-6" />
-                    ADD NEW PAYMENT METHOD
-                  </Button>
+                <Button
+                  onClick={onCheckout}
+                  className="w-full h-14 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-black rounded-2xl font-black text-lg flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300"
+                >
+                  <Zap className="w-5 h-5" />
+                  המשך לתשלום
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
 
-                  <button className="w-full text-zinc-500 text-xs font-bold hover:text-zinc-400">
-                    Add credits
-                  </button>
-                </div>
+                <p className="text-center text-zinc-600 text-xs">
+                  איסוף עצמי בלבד • תשלום מאובטח
+                </p>
               </div>
             )}
           </motion.div>
