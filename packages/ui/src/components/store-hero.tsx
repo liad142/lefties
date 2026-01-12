@@ -8,7 +8,8 @@ interface StoreHeroProps {
   description?: string;
   imageUrl?: string;
   logoUrl?: string;
-  rating: number;
+  rating?: number;
+  reviewCount?: number;
   isOpen: boolean;
   className?: string;
 }
@@ -19,6 +20,7 @@ export const StoreHero = ({
   imageUrl,
   logoUrl,
   rating,
+  reviewCount = 0,
   isOpen,
   className,
 }: StoreHeroProps) => {
@@ -64,9 +66,17 @@ export const StoreHero = ({
 
             <div className="flex items-center gap-4 text-white">
               <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-bold">{rating.toFixed(1)}</span>
-                <span className="text-slate-400 text-xs font-medium ml-1">Rating</span>
+                <Star className={cn("w-4 h-4", rating ? "fill-yellow-400 text-yellow-400" : "fill-transparent text-slate-400")} />
+                {rating ? (
+                  <>
+                    <span className="font-bold">{rating.toFixed(1)}</span>
+                    <span className="text-slate-400 text-xs font-medium">
+                      ({reviewCount} ביקורות)
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-slate-400 text-xs font-medium">אין ביקורות עדיין</span>
+                )}
               </div>
             </div>
           </div>
