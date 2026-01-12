@@ -9,6 +9,7 @@ export interface CreateReviewInput {
   order_id: string;
   rating: number;
   comment?: string;
+  photo_urls?: string[];
 }
 
 export interface CreateReviewResult {
@@ -87,6 +88,7 @@ export async function createReview(
         customer_id: userId,
         rating: input.rating,
         comment: input.comment || null,
+        photo_urls: input.photo_urls || [],
       })
       .select()
       .single();
@@ -172,6 +174,7 @@ export async function getStoreReviews(
       id,
       rating,
       comment,
+      photo_urls,
       created_at,
       customer:profiles!customer_id (
         id,

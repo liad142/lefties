@@ -13,7 +13,9 @@ import {
   Sparkles,
   Trophy,
   TreePine,
-  Droplets
+  Droplets,
+  Star,
+  MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@food-rescue/ui";
@@ -365,6 +367,32 @@ export default function CheckoutSuccessPage() {
             <li>הציגו את קוד ה-QR לצוות החנות</li>
             <li>הביאו תיק או מיכל לנשיאת המוצרים</li>
           </ul>
+        </motion.section>
+
+        {/* Review Reminder */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="bg-gradient-to-br from-purple-950/40 to-pink-950/30 rounded-2xl border border-purple-800/30 p-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+              <Star className="w-5 h-5 text-purple-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-bold text-purple-300 mb-1">ספרו לנו איך היה!</h4>
+              <p className="text-sm text-zinc-400 mb-3">
+                אחרי האיסוף, נשמח לשמוע מה חשבתם. הביקורת שלכם עוזרת לאחרים לגלות מקומות נהדרים.
+              </p>
+              <Link href="/orders">
+                <button className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-xl text-sm font-bold transition-colors">
+                  <MessageSquare className="w-4 h-4" />
+                  צפייה בהזמנות שלי
+                </button>
+              </Link>
+            </div>
+          </div>
         </motion.section>
       </main>
 

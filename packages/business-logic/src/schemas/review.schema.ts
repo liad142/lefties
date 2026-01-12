@@ -10,6 +10,7 @@ export const reviewSchema = z.object({
   customer_id: z.string().uuid(),
   rating: z.number().int().min(1, "Rating must be at least 1").max(5, "Rating must be at most 5"),
   comment: z.string().max(500, "Comment must be 500 characters or less").optional().nullable(),
+  photo_urls: z.array(z.string().url()).max(3, "Maximum 3 photos allowed").default([]),
   created_at: z.string().datetime().optional(),
 });
 
@@ -22,6 +23,7 @@ export const createReviewSchema = z.object({
   order_id: z.string().uuid("Invalid order ID"),
   rating: z.number().int().min(1, "Rating must be between 1 and 5").max(5, "Rating must be between 1 and 5"),
   comment: z.string().max(500, "Comment must be 500 characters or less").trim().optional(),
+  photo_urls: z.array(z.string().url()).max(3, "Maximum 3 photos allowed").optional().default([]),
 });
 
 /**

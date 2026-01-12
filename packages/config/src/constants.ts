@@ -12,7 +12,7 @@ export const ORDER_STATUS = {
   PENDING: "pending",
   CONFIRMED: "confirmed",
   READY: "ready",
-  COMPLETED: "completed",
+  COMPLETED: "collected", // Database uses 'collected' for completed orders
   CANCELLED: "cancelled",
 } as const;
 

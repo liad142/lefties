@@ -18,6 +18,8 @@ export { TabsNav } from "./components/tabs-nav";
 export { SurpriseBagCard } from "./components/surprise-bag-card";
 export { MenuItemCard } from "./components/menu-item-card";
 export { CartDrawer } from "./components/cart-drawer";
+export { ReviewModal } from "./components/review-modal";
+export { ReviewsSection } from "./components/reviews-section";
 
 // Re-export types
 export type { ButtonProps } from "./components/ui/button";
